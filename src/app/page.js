@@ -50,7 +50,7 @@ export default function Home() {
     setError("");
     
     try {
-      const response = await fetch("http://localhost:3011/reportGenerator", {
+      const response = await fetch(" https://artist-report-generator-backend.onrender.com/reportGenerator", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
