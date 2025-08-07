@@ -1,6 +1,4 @@
-'use client'
-
-import Image from "next/image";
+'use client';
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,40 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Music, Search, FileText, Loader2, Sparkles } from 'lucide-react';
-import { jsPDF } from "jspdf";
 
 export default function Home() {
   const [artistName, setArtistName] = useState("");
   const [artistReport, setArtistReport] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
-
-  async function downloadArtistReportText() {
-    
-    let blob = new Blob([artistReport], {type: "text/plain"})
-    let url = URL.createObjectURL(blob)
-    let a = document.createElement('a')
-    a.href = url
-    a.download = `artist report for ${artistName}.txt`
-    document.body.appendChild(a)
-    a.click()
-  }
-
-  async function downloadArtistReportPDF() {
-    
-     const doc = new jsPDF();
-
-  const text = typeof artistReport === 'string'
-    ? artistReport
-    : JSON.stringify(artistReport, null, 2);
-
-  const lines = doc.splitTextToSize(text, 180); // Wrap text within page width
-  doc.text(lines, 10, 10);
-
-  doc.save(`artist report for ${artistName}.pdf`);
-  }
-
 
   async function generateArtistReport() {
     if (!artistName.trim()) return;
@@ -80,45 +50,24 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
+    (<div
+      className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
         <div className="text-center mb-12">
-  <div className="flex flex-col items-center gap-2 mb-4">
-    {/* Logo Icon in Circle */}
-    <div className="w-12 h-12 rounded-full overflow-hidden bg-black flex items-center justify-center">
-      <Image
-        src="/cc-square-black.png"
-        alt="Core Collectif Icon"
-        width={32}
-        height={32}
-        className="object-contain"
-      />
-    </div>
-
-    {/* Title: Reverb by */}
-    <h1 className="text-4xl font-bold">
-      <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Reverb</span>
-      <span className="text-gray-400 font-normal ml-1">by</span>
-    </h1>
-
-    {/* Core Collectif Logo */}
-    <div className="mt-1">
-      <Image
-        src="/cc-logo-black.png"
-        alt="Core Collectif logo"
-        width={160}
-        height={40}
-        className="object-contain"
-      />
-    </div>
-  </div>
-
-  {/* Subheading */}
-  <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-    Generate comprehensive reports about your favorite artists. Get insights, analysis, and detailed information instantly.
-  </p>
-</div>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full">
+              <Music className="w-8 h-8 text-white" />
+            </div>
+            <h1
+              className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              Artist Report Generator
+            </h1>
+          </div>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Generate comprehensive reports about your favorite artists. Get insights, analysis, and detailed information instantly.
+          </p>
+        </div>
 
         {/* Search Section */}
         <Card className="mb-8 shadow-lg border-0 bg-white/80 backdrop-blur-sm">
@@ -140,14 +89,12 @@ export default function Home() {
                   onChange={(e) => setArtistName(e.target.value)}
                   onKeyPress={handleKeyPress}
                   className="h-12 text-lg pr-4 border-2 focus:border-purple-500 transition-colors"
-                  disabled={isLoading}
-                />
+                  disabled={isLoading} />
               </div>
-              <Button 
-                onClick={generateArtistReport} 
+              <Button
+                onClick={generateArtistReport}
                 disabled={!artistName.trim() || isLoading}
-                className="h-12 px-6 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 transition-all duration-200"
-              >
+                className="h-12 px-6 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 transition-all duration-200">
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -188,12 +135,11 @@ export default function Home() {
               </CardDescription>
             </CardHeader>
             <Separator />
-            <Button onClick={downloadArtistReportText}>download artist report - txt</Button>
-            <Button onClick={downloadArtistReportPDF}>download artist report - pdf</Button>
             <CardContent className="pt-6">
               <div className="prose prose-gray max-w-none">
                 <div className="bg-gray-50 rounded-lg p-6 border-l-4 border-purple-500">
-                  <pre className="whitespace-pre-wrap text-sm leading-relaxed font-sans text-gray-700">
+                  <pre
+                    className="whitespace-pre-wrap text-sm leading-relaxed font-sans text-gray-700">
                     {typeof artistReport === 'string' ? artistReport : JSON.stringify(artistReport, null, 2)}
                   </pre>
                 </div>
@@ -207,7 +153,8 @@ export default function Home() {
           <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
             <CardContent className="py-12">
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full mb-4">
+                <div
+                  className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full mb-4">
                   <Loader2 className="w-8 h-8 text-white animate-spin" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Generating Report</h3>
@@ -224,7 +171,8 @@ export default function Home() {
           <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm border-dashed">
             <CardContent className="py-12">
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                <div
+                  className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
                   <FileText className="w-8 h-8 text-gray-400" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2 text-gray-600">No Report Generated Yet</h3>
@@ -236,6 +184,6 @@ export default function Home() {
           </Card>
         )}
       </div>
-    </div>
+    </div>)
   );
 }
