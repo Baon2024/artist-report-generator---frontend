@@ -15,6 +15,7 @@ export default function Home() {
   const [artistReport, setArtistReport] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+   const [reportFocus, setReportFocus] = useState("");
 
 
   async function downloadArtistReportText() {
@@ -45,17 +46,18 @@ export default function Home() {
 
   async function generateArtistReport() {
     if (!artistName.trim()) return;
+    if (!reportFocus || !artistName || !reportFocus && !artistName) return;
     
     setIsLoading(true);
     setError("");
     
-    try {
+    try { //https://artist-report-generator-backend-1.onrender.com or localhost3011, make dynamic ideally
       const response = await fetch("https://artist-report-generator-backend-1.onrender.com/reportGenerator", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ chosenArtist: artistName })
+        body: JSON.stringify({ chosenArtist: artistName, reportFocus: reportFocus })
       });
       
       if (!response.ok) {
@@ -160,6 +162,16 @@ export default function Home() {
                   </>
                 )}
               </Button>
+            </div>
+
+            <div className="mt-4">
+              <Input
+                placeholder="Report focus (optional - e.g., discography, influences, career highlights...)"
+                value={reportFocus}
+                onChange={(e) => setReportFocus(e.target.value)}
+                className="h-12 text-lg border-2 focus:border-purple-500 transition-colors"
+                disabled={isLoading}
+              />
             </div>
             
             {error && (
