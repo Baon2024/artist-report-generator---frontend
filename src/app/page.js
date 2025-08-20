@@ -9,6 +9,16 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Music, Search, FileText, Loader2, Sparkles } from 'lucide-react';
 import { jsPDF } from "jspdf";
+import localFont from "next/font/local";
+
+const rethinkSans = localFont({
+  src: [
+    { path: "../fonts/RethinkSans-Regular.ttf", weight: "400", style: "normal" },
+    // include this if you have a bold weight so <h1 class="font-bold"> renders correctly 
+    { path: "../fonts/RethinkSans-Regular.ttf",    weight: "700", style: "normal" },
+  ],
+  display: "swap",
+});
 
 export default function Home() {
   const [artistName, setArtistName] = useState("");
@@ -19,6 +29,22 @@ export default function Home() {
 
 
   async function downloadArtistReportText() {
+
+    //
+    const response = await fetch("http://localhost:3011/reportGoogleDoc", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ artistReport: artistReport })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to send artistReport');
+      }
+      
+      const data = await response.json();
+      console.log("data back from sending to artistReport is: ", data);
     
     let blob = new Blob([artistReport], {type: "text/plain"})
     let url = URL.createObjectURL(blob)
@@ -28,6 +54,8 @@ export default function Home() {
     document.body.appendChild(a)
     a.click()
   }
+
+  
 
   async function downloadArtistReportPDF() {
     
@@ -52,7 +80,7 @@ export default function Home() {
     setError("");
     
     try { //https://artist-report-generator-backend-1.onrender.com or localhost3011, make dynamic ideally
-      const response = await fetch("https://artist-report-generator-backend-1.onrender.com/reportGenerator", {
+      const response = await fetch("http://localhost:3011/reportGenerator", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -100,7 +128,9 @@ export default function Home() {
 
     {/* Title: Reverb by */}
     <h1 className="text-4xl font-bold">
-      <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Reverb</span>
+      <span className={`${rethinkSans.className} font-normal bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent`}>
+        Reverb
+      </span>
       <span className="text-gray-400 font-normal ml-1">by</span>
     </h1>
 
