@@ -31,12 +31,10 @@ export default function Home() {
 
   async function downloadArtistReportText() {
 
-    toast.error("this is in the middle of a changeover!!!")
-    return //need to fix google creds in deloyed version, before allowing deloyed frontend to use this
 
     toast.success("artist report opening...")
     if (artistReport) {
-        const response = await fetch("http://localhost:3011/reportGoogleDoc", {
+        const response = await fetch("https://artist-report-generator-backend-1.onrender.com/reportGoogleDoc", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -84,7 +82,7 @@ export default function Home() {
     setIsLoading(true);
     setError("");
     
-    try { //https://artist-report-generator-backend-1.onrender.com or localhost3011, make dynamic ideally
+    try { //https://artist-report-generator-backend-1.onrender.com or localhost3011, make dynamic ideally http://localhost:3011
       const response = await fetch("https://artist-report-generator-backend-1.onrender.com/reportGenerator", {
         method: "POST",
         headers: {
