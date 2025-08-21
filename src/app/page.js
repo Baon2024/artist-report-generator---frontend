@@ -30,7 +30,8 @@ export default function Home() {
 
 
   async function downloadArtistReportText() {
-
+    toast.error("not available yet")
+    return;
 
     toast.success("artist report opening...")
     if (artistReport) {
