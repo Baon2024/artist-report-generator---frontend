@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Music, Search, FileText, Loader2, Sparkles } from 'lucide-react';
 import { jsPDF } from "jspdf";
 import localFont from "next/font/local";
+import { toast } from "sonner";
 
 const rethinkSans = localFont({
   src: [
@@ -30,29 +31,33 @@ export default function Home() {
 
   async function downloadArtistReportText() {
 
-    //
-    const response = await fetch("http://localhost:3011/reportGoogleDoc", {
+    toast.error("this is in the middle of a changeover!!!")
+    return //need to fix google creds in deloyed version, before allowing deloyed frontend to use this
+
+    toast.success("artist report opening...")
+    if (artistReport) {
+        const response = await fetch("http://localhost:3011/reportGoogleDoc", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ artistReport: artistReport })
+        body: JSON.stringify({ artistReport: artistReport, chosenArtist: artistName, reportFocus: reportFocus  })
       });
       
       if (!response.ok) {
         throw new Error('Failed to send artistReport');
       }
       
-      const data = await response.json();
-      console.log("data back from sending to artistReport is: ", data);
+      const googleDocURL = await response.json();
+      console.log("data back from sending to artistReport is: ", googleDocURL);
     
-    let blob = new Blob([artistReport], {type: "text/plain"})
-    let url = URL.createObjectURL(blob)
-    let a = document.createElement('a')
-    a.href = url
-    a.download = `artist report for ${artistName}.txt`
-    document.body.appendChild(a)
-    a.click()
+    window.open(googleDocURL, "_blank")
+      } else if (!artistReport) {
+        console.log('cannot download artist report, as it doesnt exist');
+        toast.error("cannot download artist report, as it doesnt exist")
+      }
+    
+    
   }
 
   
@@ -230,7 +235,7 @@ export default function Home() {
               </CardDescription>
             </CardHeader>
             <Separator />
-            <Button onClick={downloadArtistReportText}>download artist report - txt</Button>
+            <Button onClick={downloadArtistReportText}>open artist report as Google Doc</Button>
             <Button onClick={downloadArtistReportPDF}>download artist report - pdf</Button>
             <CardContent className="pt-6">
               <div className="prose prose-gray max-w-none">
