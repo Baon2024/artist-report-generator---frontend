@@ -79,12 +79,16 @@ export default function Home() {
   async function generateArtistReport() {
     if (!artistName.trim()) return;
     if (!reportFocus || !artistName || !reportFocus && !artistName) return;
+    if (artistReport) {
+      console.log("artist report should be cleared")
+      setArtistReport("")
+    }
     
     setIsLoading(true);
     setError("");
     
     try { //https://artist-report-generator-backend-1.onrender.com or localhost3011, make dynamic ideally http://localhost:3011
-      const response = await fetch("https://artist-report-generator-backend-1.onrender.com/reportGenerator", {
+      const response = await fetch("http://localhost:3011/reportGenerator", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
