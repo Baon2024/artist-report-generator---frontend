@@ -39,11 +39,8 @@ export default function Home() {
 
 
   async function downloadArtistReportText() {
-<<<<<<< Updated upstream
     //toast.error("not available yet")
-=======
-    toast.error("not available yet")
->>>>>>> Stashed changes
+
     //return;
 
     toast.success("artist report opening...")
