@@ -1,13 +1,14 @@
 'use client'
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Music, Search, FileText, Loader2, Sparkles } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { jsPDF } from "jspdf";
 import localFont from "next/font/local";
 import { toast } from "sonner";
@@ -26,16 +27,28 @@ export default function Home() {
   const [artistReport, setArtistReport] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-   const [reportFocus, setReportFocus] = useState("");
+  const [reportFocus, setReportFocus] = useState("");
+
+  //need to add report template choices to choose from 
+  const reportTemplateChoices = [
+    "bedroom artist",
+    "early climber",
+    "mainstream artist",
+    "late bloomer"
+  ]
 
 
   async function downloadArtistReportText() {
+<<<<<<< Updated upstream
     //toast.error("not available yet")
+=======
+    toast.error("not available yet")
+>>>>>>> Stashed changes
     //return;
 
     toast.success("artist report opening...")
     if (artistReport) {
-        const response = await fetch("https://artist-report-generator-backend-1.onrender.com/reportGoogleDoc", {
+        const response = await fetch("http://localhost:3012/reportGoogleDoc", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -83,12 +96,14 @@ export default function Home() {
       console.log("artist report should be cleared")
       setArtistReport("")
     }
+
+    
     
     setIsLoading(true);
     setError("");
     
     try { //https://artist-report-generator-backend-1.onrender.com or localhost3011, make dynamic ideally http://localhost:3011
-      const response = await fetch("https://artist-report-generator-backend-1.onrender.com/reportGenerator", {
+      const response = await fetch("http://localhost:3012/reportGenerator", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -116,6 +131,10 @@ export default function Home() {
       generateArtistReport();
     }
   };
+
+  useEffect(() => {
+    console.log("reportFocus is: ", reportFocus);
+  },[reportFocus])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
@@ -202,14 +221,48 @@ export default function Home() {
               </Button>
             </div>
 
-            <div className="mt-4">
-              <Input
-                placeholder="Report focus (optional - e.g., discography, influences, career highlights...)"
-                value={reportFocus}
-                onChange={(e) => setReportFocus(e.target.value)}
-                className="h-12 text-lg border-2 focus:border-purple-500 transition-colors"
-                disabled={isLoading}
-              />
+           <div className="mt-4">
+              <p className="text-sm text-muted-foreground mb-3">Select report template (optional):</p>
+              <div className="flex flex-wrap gap-3">
+                {reportTemplateChoices.map((choice) => (
+                  <button
+                    key={choice}
+                    onClick={() => setReportFocus(reportFocus === choice ? "" : choice)}
+                    disabled={isLoading}
+                    className={`
+                      relative px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 capitalize min-w-fit
+                      ${
+                        reportFocus === choice
+                          ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-md"
+                          : "bg-white text-gray-700 hover:text-gray-900"
+                      }
+                      ${!isLoading ? "cursor-pointer" : "cursor-not-allowed opacity-50"}
+                    `}
+                    style={{
+                      background: reportFocus === choice ? "linear-gradient(135deg, #8b5cf6, #3b82f6)" : "white",
+                    }}
+                  >
+                    {reportFocus !== choice && (
+                      <>
+                        <div
+                          className="absolute inset-0 rounded-lg animate-pulse"
+                          style={{
+                            background:
+                              "linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000)",
+                            backgroundSize: "400% 400%",
+                            animation: "rainbow 3s linear infinite",
+                            padding: "2px",
+                          }}
+                        >
+                          <div className="w-full h-full bg-white rounded-lg"></div>
+                        </div>
+                        <span className="relative z-10">{choice}</span>
+                      </>
+                    )}
+                    {reportFocus === choice && <span className="relative z-10">{choice}</span>}
+                  </button>
+                ))}
+              </div>
             </div>
             
             {error && (
