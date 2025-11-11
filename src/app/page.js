@@ -27,6 +27,18 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
    const [reportFocus, setReportFocus] = useState("");
+   const [ additionalPrompt, setAdditionalPrompt ] = useState("")
+  const [ chartmetricID, setChartmetricID ] = useState("")
+
+
+  
+
+  const reportTemplateChoicesVariation = [
+    "album_release",
+    "track_release",
+    "fanbase_and_growth_analysis",
+    "catalogue_revival"
+  ]
 
 
   async function downloadArtistReportText() {
@@ -76,33 +88,59 @@ export default function Home() {
   }
 
 
-  async function generateArtistReport() {
+  async function newReverbVariantReportGeneration() {
     if (!artistName.trim()) return;
-    if (!reportFocus || !artistName || !reportFocus && !artistName) return;
+    if (!reportFocus) {
+      toast.error("you need to select the report focus")
+      return
+    }
+    if (!artistName) {
+      toast.error("you need to select the artist name")
+      return
+    }
+    if (!chartmetricID) {
+      toast.error("you need to enter the chartmetric ID")
+      return
+    }
     if (artistReport) {
       console.log("artist report should be cleared")
       setArtistReport("")
     }
-    
+
+    // Use mock data if toggle is enabled
+    /*if (useMockData) {
+      setIsLoading(true);
+      setTimeout(() => {
+        setArtistReport(mockArtistReport);
+        setIsLoading(false);
+        toast.success("Mock report generated!");
+      }, 1500);
+      return;
+    }*/
+
     setIsLoading(true);
     setError("");
-    
+
+    let endpoint = process.env.NEXT_PUBLIC_API_BASE_URL ? `https://reverb-report-generation-variant-backend.onrender.com/suiteEndpoint` : "http://localhost:3011/suiteEndpoint"
+     console.log(`endpoint is: ${endpoint}`)
+
     try { //https://artist-report-generator-backend-1.onrender.com or localhost3011, make dynamic ideally http://localhost:3011
-      const response = await fetch("https://artist-report-generator-backend-1.onrender.com/reportGeneratorCustomFocus", {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ chosenArtist: artistName, reportFocus: reportFocus })
+        body: JSON.stringify({ artist_name: artistName, template_choice: reportFocus, custom_additional_prompt: additionalPrompt, chartmetric_id: chartmetricID })
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to generate report');
       }
-      
+
       const data = await response.json();
       console.log("data back from generateArtistReport is: ", data);
       setArtistReport(data);
+      //need to save artistReort in global useContext hook
     } catch (err) {
       setError("Failed to generate report. Please try again.");
       console.error("Error generating report:", err);
@@ -172,52 +210,156 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-3">
-              <div className="flex-1 relative">
-                <Input
-                  placeholder="Enter artist name (e.g., Taylor Swift, The Beatles, Drake...)"
-                  value={artistName}
-                  onChange={(e) => setArtistName(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="h-12 text-lg pr-4 border-2 focus:border-purple-500 transition-colors"
-                  disabled={isLoading}
-                />
-              </div>
-              <Button 
-                onClick={generateArtistReport} 
-                disabled={!artistName.trim() || isLoading}
-                className="h-12 px-6 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 transition-all duration-200"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Generate Report
-                  </>
-                )}
-              </Button>
-            </div>
-
-            <div className="mt-4">
+           <div className="flex gap-3">
+            <div className="flex-1 relative">
               <Input
-                placeholder="Report focus (optional - e.g., discography, influences, career highlights...)"
-                value={reportFocus}
-                onChange={(e) => setReportFocus(e.target.value)}
-                className="h-12 text-lg border-2 focus:border-purple-500 transition-colors"
+                placeholder="Enter artist name (e.g., Taylor Swift, The Beatles, Drake...)"
+                value={artistName}
+                onChange={(e) => setArtistName(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="h-12 text-lg pr-4 border-2 focus:border-accent-black transition-colors"
                 disabled={isLoading}
               />
             </div>
-            
+            <div className="flex-1 relative">
+              <Input
+                placeholder="Add your custom report request"
+                value={additionalPrompt}
+                onChange={(e) => setAdditionalPrompt(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="h-12 text-lg pr-4 border-2 focus:border-accent-black transition-colors"
+                disabled={isLoading}
+              />
+            </div>
+            <div className="flex-1 relative">
+              <Input
+                placeholder="Add chartmetric id"
+                value={chartmetricID}
+                onChange={(e) => setChartmetricID(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="h-12 text-lg pr-4 border-2 focus:border-accent-black transition-colors"
+                disabled={isLoading}
+              />
+            </div>
+            <Button
+              onClick={newReverbVariantReportGeneration}
+              disabled={!artistName.trim() || isLoading}
+              className="h-12 px-6 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer transition-all duration-200"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Generate Report
+                </>
+              )}
+            </Button>
+          </div>
             {error && (
               <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-red-600 text-sm">{error}</p>
               </div>
             )}
-          </CardContent>
+         
+
+        <div className="mt-4">
+            <p className="text-sm text-muted-foreground mb-3">Select report template:</p>
+
+            <div className="flex flex-wrap gap-3">
+              {reportTemplateChoicesVariation.map((choice) => (
+                <div key={choice} className="relative group">
+                  <button
+                    onClick={() => setReportFocus(reportFocus === choice ? "" : choice)}
+                    disabled={isLoading}
+                    className={`
+            px-3 py-3 rounded-lg font-medium text-sm transition-all duration-200 capitalize min-w-fit
+            ${reportFocus === choice
+                        ? "bg-primary/5 text-primary border-2 border-primary shadow-md"
+                        : "border-2 border-accent-black/40 text-accent-black bg-transparent hover:bg-accent-black/5 hover:border-accent-black/60"}
+            ${!isLoading ? "cursor-pointer" : "cursor-not-allowed opacity-50"}
+          `}
+                  >
+                    {choice}
+                  </button>
+
+                  {/* Tooltip */}
+                  {choice === "Album Preparation" && (
+                    <div
+                      className="
+              pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2
+              bg-gray-900 text-white text-xs rounded-md px-4 py-3 w-80
+              opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200
+               z-100 shadow-lg whitespace-pre-line
+            "
+                    >
+                      📝Artist has an album coming out in Y period of time. Based on their previous releases, please give an overview of their current audience and use this to tell us how to launch a new project.
+
+
+                    </div>
+                  )}
+                  {choice === "Maintain Audience Engagement" && (
+                    <div
+                      className="
+              pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2
+              bg-gray-900 text-white text-xs rounded-md px-4 py-3 w-80
+              opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200
+               z-100 shadow-lg whitespace-pre-line
+            "
+                    >
+                      🎯 How Can the Artist Keep Their Audience Engaged Between Album Projects
+
+                    </div>
+                  )}
+                  {choice === "Revive Catalogue" && (
+                    <div
+                      className="
+              pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2
+              bg-gray-900 text-white text-xs rounded-md px-4 py-3 w-80
+              opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200
+               z-100 shadow-lg whitespace-pre-line
+            "
+                    >
+                      🔄 Reviving Artist’s Catalogue: Best Strategies & Timing
+
+                    </div>
+                  )}
+                  {choice === "Fanbase Analysis" && (
+                    <div
+                      className="
+              pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2
+              bg-gray-900 text-white text-xs rounded-md px-4 py-3 w-80
+              opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200
+               z-100 shadow-lg whitespace-pre-line
+            "
+                    >
+                      📊 Artist Fanbase Analysis: Where They Are, How to Reach Them, and How to Grow
+
+                    </div>
+                  )}
+                  {choice === "Grow Fanbase" && (
+
+                    <div
+                      className="
+    pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2
+    bg-gray-900 text-white text-xs rounded-md px-4 py-3 w-96 max-h-80 overflow-y-auto
+    opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200
+    z-[9999] shadow-xl whitespace-pre-line prose-sm
+  "
+                    >
+                      📈 How can the Artist engage, activate and grow their existing fanbase over the next Y period of time?
+
+
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+         </CardContent>
         </Card>
 
         {/* Report Display Section */}
