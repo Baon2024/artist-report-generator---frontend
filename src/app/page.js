@@ -121,8 +121,11 @@ export default function Home() {
     setIsLoading(true);
     setError("");
 
-    let endpoint = process.env.NEXT_PUBLIC_API_BASE_URL ? `https://reverb-report-generation-variant-backend.onrender.com/suiteEndpoint` : "http://localhost:3011/suiteEndpoint"
-     console.log(`endpoint is: ${endpoint}`)
+    //let endpoint = process.env.NEXT_PUBLIC_API_BASE_URL ? `https://reverb-report-generation-variant-backend.onrender.com/suiteEndpoint` : "http://localhost:3011/suiteEndpoint"
+     //console.log(`endpoint is: ${endpoint}`)
+    
+    let endpoint = `https://reverb-report-generation-variant-backend.onrender.com/suiteEndpoint`
+    console.log(`endpoint is: ${endpoint}`)
 
     try { //https://artist-report-generator-backend-1.onrender.com or localhost3011, make dynamic ideally http://localhost:3011
       const response = await fetch(endpoint, {
